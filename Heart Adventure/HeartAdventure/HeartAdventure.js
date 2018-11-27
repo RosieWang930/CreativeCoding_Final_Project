@@ -1,4 +1,4 @@
-//Heart Adventure
+	//Heart Adventure
 //by Rosie
 
 var heart, flower, letter, heartbroken, tear, platform, spike;
