@@ -1,0 +1,32 @@
+//background
+
+function backgroundDrawing(){
+	image(building,-20,20,1600,729);
+	cloud();
+	updateCloud();
+}
+
+function cloud(){
+	var velocity = createVector(-1,0);
+	var v1 = createVector(210,50);
+	var v4 = createVector(870,60);
+	var v7 = createVector(1100,90);
+	v1.add(velocity);
+	v4.add(velocity);
+	v7.add(velocity);	
+	
+}
+
+function updateCloud(){
+	ellipseMode(CENTER);
+	fill(255);
+	noStroke();
+	ellipse(v1.x,v1.y,200,70);
+	ellipse(v1.x-90,v1.y+20,170,50);
+	ellipse(v1.x-30,v1.y+30,200,50);
+	ellipse(v4.x,v4.y,160,50);
+	ellipse(v4+30.x,v4+20.y,140,50);
+	ellipse(v4-70.x,v4.y+20,130,50);
+	ellipse(v7.x,v7.y,120,50);
+	ellipse(v7.x+40,v7.y+3,110,50);
+}
