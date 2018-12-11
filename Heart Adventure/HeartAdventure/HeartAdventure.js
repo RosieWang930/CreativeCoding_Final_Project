@@ -1,14 +1,16 @@
 //Heart Adventure
 //by Rosie
 
-var BGM;
+var BGM, soundgain, soundlose, soundgameover, soundwin, pa; //sound effects
 var heart, flower, letter, heartbroken, tear, platform, spike, mountain; //sprite
 var point, goodthings, badthings, spikes, floor; //group
 var speed;
 var GRAVITY;
-var bgcolor;
-var building;
-var clouds;
+var bgcolor;//background color
+var building, introImg;//background image
+var clouds, birds;//background mover
+var theFont;
+var clicktimes;
 
 
 function preload(){
@@ -17,7 +19,12 @@ function preload(){
 	soundgain = loadSound('assets/gain.wav');
 	soundlose = loadSound('assets/lose.wav');
 	soundgameover = loadSound('assets/gameover.wav');
+	soundwin = loadSound('assets/soundwin.wav');
+	pa = loadSound('assets/pa.wav');
 	building = loadImage('assets/city.png');
+	introImg = loadImage('assets/background.jpeg');
+	theFont = loadFont('assets/TheHistoriaDemo.ttf');
+	
 }
 
 function setup() {
@@ -35,104 +42,99 @@ function setup() {
 	point = 0;
 	speed = 50;
 	GRAVITY = 10;
+	clicktimes = 0;
 	
 	//Display: floor
-	for(i=0;i<300;i++){
-		platform = createSprite(830+i*60,630);
-		platform.addImage(loadImage('assets/platform1.png'));
-		platform.velocity.x -= 5;
-		floor.add(platform);
-	}
+
+	platform = createSprite(800,630);
+	platform.addImage(loadImage('assets/platform1.png'));
+	floor.add(platform);
 	
 	//Display: good things, bad things, and spike
-	for(i=0;i<2;i++){
-		flower = createSprite(random(700,1600),540);
-		flower.addImage(loadImage('assets/flower1.png'));
-		flower.velocity.x -= 5;
-		letter = createSprite(random(700,1600),540);
-		letter.addImage(loadImage('assets/letter1.png'));
-		letter.velocity.x -= 5;
-		tear = createSprite(random(800,1600),540);
-		tear.addImage(loadImage('assets/blacktears.png'));
-		tear.velocity.x -= 5;
-		spike = createSprite(random(500,1600),540);
-		spike.addImage(loadImage('assets/spike1.png'));
-		spike.velocity.x -= 5;
-		goodthings.add(flower);
-		goodthings.add(letter);
-		badthings.add(tear);
-		spikes.add(spike);
-	}
-	
-	//Display: heart and heart broken
-	heart = createSprite(440,350);
-	heart.addAnimation('assets/heart1.png','assets/heart2.png','assets/heart3.png');
-	heartbroken = createSprite(440,350);
-	heart.addAnimation('assets/heart3.png','assets/heartbroken1.png','assets/heartbroken4.png');
-	
-}
-
-function draw() {
-	background(color(170+frameCount/40,212,234));
-	image(building,-20,20,1600,729);
-	clouds = new mover(210,50);
-	clouds.update();
-	clouds.check();
-	clouds.displayCloud();
-	//fill(0);
-	setAll();
-	//updateSprites();
-	drawSprite(heart);
-	control();
-	displayPoint(1400,30);
-	if(heart.position.y>=1600){
-		drawSprite(heartbroken);	
-		over();
-	}
-	if(heart.collide(spike)){
-		drawSprite(heartbroken);	
-		over();
-		noLoop();
-	}
-	
-	
-}
-
-function setAll(){
-	drawSprites(floor);
-	drawSprites(spikes);
-	drawSprites(goodthings);
-	drawSprites(badthings);
-}
-
-/*
-function updateSprites(){
-	if(second%2 == 0){
 	flower = createSprite(random(700,1600),540);
-	flower.addImage(loadImage('flower1.png'));
+	flower.addImage(loadImage('assets/flower1.png'));
 	flower.velocity.x -= 5;
 	letter = createSprite(random(700,1600),540);
-	letter.addImage(loadImage('letter1.png'));
+	letter.addImage(loadImage('assets/letter1.png'));
 	letter.velocity.x -= 5;
 	tear = createSprite(random(800,1600),540);
-	tear.addImage(loadImage('blacktears.png'));
+	tear.addImage(loadImage('assets/blacktears.png'));
 	tear.velocity.x -= 5;
-	spike = createSprite(random(500,1600),540);
-	spike.addImage(loadImage('spike1.png'));
+	spike = createSprite(random(800,1600),520);
+	spike.addImage(loadImage('assets/spike1.png'));
 	spike.velocity.x -= 5;
 	goodthings.add(flower);
 	goodthings.add(letter);
 	badthings.add(tear);
 	spikes.add(spike);
+	
+	//Display: heart and heart broken
+	heart = createSprite(440,370);
+	heart.addAnimation('assets/heart1.png','assets/heart2.png','assets/heart3.png');
+	heart.position.x = constrain(heart.position.x,0,20000);
+	
+	clouds = [5];
+	for(i=0;i<clouds.length;i++){
+		clouds[i] = new mover(410,50,-2,0,-0.5,0);
+	}
+	
+	birds = [8];
+	for(i=0;i<birds.length;i++){
+		birds[i] = new mover(400,200,2,-1,0,-0.5);
+	}
+	
+	mountain = createSprite(1600,170);
+	mountain.addImage(loadImage('assets/mountain.png'));
+	
+}
+
+function draw(){
+	beginningScene();
+	if(keyCode == UP_ARROW){
+		gameStart();
+	}
 		
+}
+
+
+function gameStart(){
+
+	//draw background
+	background(color(170+frameCount/30,212,234));
+	image(building,-20,20,1600,729);
+	for(i=0;i<clouds.length;i++){
+  	clouds[i].update();
+		clouds[i].checkOne();
+		clouds[i].displayCloud();
+	}
+	for(i=0;i<birds.length;i++){
+  	birds[i].update();
+		birds[i].checkTwo();
+		birds[i].displayBirds();
+	}
+	//drawSprite(mountain);
+	//draw sprites
+	control();
+	setAll();
+	updateThings();
+	drawSprite(heart);	
+	displayPoint(1450,30,0);
+	touchSpike();
+	
+	if(heart.position.y>=1600){
+		over();
+		noLoop();
+	}
+}
+
+
+function setAll(){
 	drawSprites(floor);
+	mountainControl();
 	drawSprites(spikes);
 	drawSprites(goodthings);
 	drawSprites(badthings);
-	}
-}
-*/
-
+}	
 
 //game control
 function control(){
@@ -165,18 +167,41 @@ function losePoints(){
 		soundlose.play();
 	}
 }
+function touchSpike(){
+	if(heart.collide(spikes)){
+		over();
+		noLoop();
+	}
+	if(heart.overlap(spikes)){
+		over();
+		noLoop();
+	}
+}
+
 
 //Update things
 function updateThings(){
-	for(i=0;i<2;i++){
-		flower = createSprite(random(700,1600),540);
-		flower.addImage(loadImage('flower1.png'));
+	if(frameCount%100 == 0) {
+		flower = createSprite(random(1200,2100),540);
+		flower.addImage(loadImage('assets/flower1.png'));
 		flower.velocity.x -= 5;
-		letter = createSprite(random(700,1600),540);
-		letter.addImage(loadImage('letter1.png'));
+		letter = createSprite(random(1200,2100),540);
+		letter.addImage(loadImage('assets/letter1.png'));
 		letter.velocity.x -= 5;
+		tear = createSprite(random(1200,2100),540);
+		tear.addImage(loadImage('assets/blacktears.png'));
+		tear.velocity.x -= 5;
+		spike = createSprite(random(1200,2100),520);
+		spike.addImage(loadImage('assets/spike1.png'));
+		spike.velocity.x -= 5;
 		goodthings.add(flower);
 		goodthings.add(letter);
+		badthings.add(tear);
+		spikes.add(spike);
+	}
+	if(heart.collide(spike)){
+		over();
+		noLoop();
 	}
 }
 
@@ -187,60 +212,58 @@ function collect(me, thing){
 }
 
 //Display: points
-function displayPoint(a,b){
-	fill(0);
+function displayPoint(a,b,c){
+	fill(c);
 	textSize(20);
 	text('Points:',a,b);
-	fill(255,20,0);
 	text(point,a+80,b);
 }
 
-//Game Over
-function over(){
-	background(0,0,0,95);
-	fill(255);
-	textSize(50);
-	text('Game Over',width/2-100,height/2);
-	displayPoint(width/2-20,height/2+50);
-	BGM.pause();
-	soundgameover.play();
+function mountainControl(){
+	mountainDisplay();
+	block();
+	//knock();
 }
 
-
-
 function mountainDisplay(){
-	if(second()>=100){
-		mountain = createSprite(1300,540);
-		mountain.addImage(loadImage('mountain.png'));
-		mountain.velocity.x -= 5;
+	//millisec = millis();
+	if(frameCount>=200){
+		drawSprite(mountain);
 	}
 }
 
 function block(){
-	if(heart.collide(mountain)){
-		mountain.displace(heart);
+	pa.setVolume(0.7);
+	if(mountain.overlapPixel(heart.position.x, heart.position.y)){
+		heart.position.x -=2;
+		if(keyIsDown(UP_ARROW)){
+			clicktimes++;
+			pa.play();
+		}
+		if(clicktimes>=30){
+			mountain.remove();
+			heart.velocity.x +=0.8;
+			pa.pause();
+		}
 	}
-	
 	if(heart.position.x<=0){
 		over();
+		noLoop();
 	}
-
-}
-
-function knock(){
-	if(keyWentDown(UP_ARROW)){
-		//change mountain color
-		//after 5 sec mountain fall down
+	
+	if(heart.position.x>= width){
+		win();
+		noLoop();
 	}
 }
 
 class mover {
 	
-	constructor(x, y){
-    this.position = createVector(x, y);
-    this.velocity = createVector(-1, 0);
-    this.acceleration = createVector(-0.001, 0);
-  }
+	constructor(a,b,c,d,e,f){
+    this.position = createVector(a, b);
+    this.velocity = createVector(c, d);
+    this.acceleration = createVector(e, f);
+	}
 
   update(){
 		this.velocity.add(this.acceleration);
@@ -261,18 +284,75 @@ class mover {
 		ellipse(this.position.x+930,this.position.y+43,110,50);
 	}
 	
-	displayBirds(){
-	
-	
+	//800,100
+	displayBirds(x){
+			fill(0);
+			noStroke();
+			triangle(this.position.x,this.position.y,this.position.x+20,this.position.y-10,this.position.x+8,this.position.y+7);
+			triangle(this.position.x+50,this.position.y-20,this.position.x+70,this.position.y-10-20,this.position.x+58,this.position.y+7-20);
+			triangle(this.position.x+100,this.position.y-40,this.position.x+120,this.position.y-10-40,this.position.x+108,this.position.y+7-40);
 	}
 	
-	check(){
-		if(location.x > width) {
-      location.x = 0;
-     } 
-		else if(location.x < 0){
-      location.x = width; 
-    }
+	checkOne(){
+		 if(this.position.x+930 < 0)
+      this.position.x = width; 
 	}
+	
+	checkTwo(){
+		if(this.position.y<=0 || this.position.y >=500)
+			this.position.y = 500;
+		if(this.position.x>=width)
+		{
+			this.position.x = 0;
+		}
+	}
+}
 
+//openning scene
+function beginningScene(){
+	background(255);
+	image(introImg,0,0,1600,700);
+	fill(20,20,20);
+	textFont(theFont,180);
+	stroke(255);
+	strokeWeight(5);
+	textSize(165);
+	text('Heart Adventure',width/2-380,height/2-20);
+	textFont('Helvetica');
+	fill(0);
+	noStroke();
+	textSize(20);
+	text('[ Press ↑ to Play ]',width/2-70,height/2+130);
+}
+
+//Game Over
+function over(){
+	background(0,0,0,90);
+	textSize(100);
+	fill(50,50,50);
+	stroke(255);
+	strokeWeight(4);
+	textFont(theFont,100);
+	text('Game Over',width/2-180,height/2);
+	noStroke();
+	textFont('Helvetica');
+	displayPoint(width/2-60,height/2+50,255);
+	BGM.pause();
+	soundgameover.play();
+}
+
+//win
+function win(){
+	background(255,185,196,99.5);
+	fill(20,20,20);
+	stroke(255);
+	strokeWeight(3);
+	textSize(100);
+	textFont(theFont,100);
+	text('You Win !',width/2-130,height/2);
+	noStroke();
+	textFont('Helvetica');
+	displayPoint(width/2-60,height/2+50,255);
+	BGM.pause();
+	soundwin.play();
 }
