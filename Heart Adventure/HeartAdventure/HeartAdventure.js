@@ -349,7 +349,7 @@ function win(){
 	strokeWeight(3);
 	textSize(100);
 	textFont(theFont,100);
-	text('You Win !',width/2-130,height/2);
+	text('You Find Love !',width/2-200,height/2);
 	noStroke();
 	textFont('Helvetica');
 	displayPoint(width/2-60,height/2+50,255);
