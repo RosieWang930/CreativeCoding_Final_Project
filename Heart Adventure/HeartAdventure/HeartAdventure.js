@@ -181,18 +181,18 @@ function touchSpike(){
 
 //Update things
 function updateThings(){
-	if(frameCount%100 == 0) {
-		flower = createSprite(random(1200,2100),540);
-		flower.addImage(loadImage('assets/flower1.png'));
+	if(frameCount%150 == 0) {
+		flower = createSprite(random(1200,1600),540);
+		flower.addImage(loadImage('flower1.png'));
 		flower.velocity.x -= 5;
-		letter = createSprite(random(1200,2100),540);
-		letter.addImage(loadImage('assets/letter1.png'));
+		letter = createSprite(random(1600,2100),540);
+		letter.addImage(loadImage('letter1.png'));
 		letter.velocity.x -= 5;
 		tear = createSprite(random(1200,2100),540);
-		tear.addImage(loadImage('assets/blacktears.png'));
+		tear.addImage(loadImage('blacktears.png'));
 		tear.velocity.x -= 5;
 		spike = createSprite(random(1200,2100),520);
-		spike.addImage(loadImage('assets/spike1.png'));
+		spike.addImage(loadImage('spike1.png'));
 		spike.velocity.x -= 5;
 		goodthings.add(flower);
 		goodthings.add(letter);
@@ -220,19 +220,10 @@ function displayPoint(a,b,c){
 }
 
 function mountainControl(){
-	mountainDisplay();
-	block();
-	//knock();
-}
-
-function mountainDisplay(){
-	//millisec = millis();
-	if(frameCount>=200){
+	if(frameCount >= 1500){
 		drawSprite(mountain);
+		mountain.position.x -= 2;
 	}
-}
-
-function block(){
 	pa.setVolume(0.7);
 	if(mountain.overlapPixel(heart.position.x, heart.position.y)){
 		heart.position.x -=2;
@@ -255,6 +246,55 @@ function block(){
 		win();
 		noLoop();
 	}
+}
+
+//openning scene
+function beginningScene(){
+	background(255);
+	image(introImg,0,0,1600,700);
+	fill(20,20,20);
+	textFont(theFont,180);
+	stroke(255);
+	strokeWeight(5);
+	textSize(165);
+	text('Heart Adventure',width/2-380,height/2-20);
+	textFont('Helvetica');
+	fill(0);
+	noStroke();
+	textSize(20);
+	text('[ Press ↑ to Play ]',width/2-70,height/2+130);
+}
+
+//Game Over
+function over(){
+	background(0,0,0,90);
+	textSize(100);
+	fill(50,50,50);
+	stroke(255);
+	strokeWeight(4);
+	textFont(theFont,100);
+	text('Game Over',width/2-180,height/2);
+	noStroke();
+	textFont('Helvetica');
+	displayPoint(width/2-60,height/2+50,255);
+	BGM.pause();
+	soundgameover.play();
+}
+
+//win
+function win(){
+	background(255,185,196,99.5);
+	fill(255,50,50);
+	stroke(255);
+	strokeWeight(3);
+	textSize(100);
+	textFont(theFont,100);
+	text('You Find Love !',width/2-200,height/2);
+	noStroke();
+	textFont('Helvetica');
+	displayPoint(width/2-60,height/2+50,255);
+	BGM.pause();
+	soundwin.play();
 }
 
 class mover {
@@ -306,53 +346,4 @@ class mover {
 			this.position.x = 0;
 		}
 	}
-}
-
-//openning scene
-function beginningScene(){
-	background(255);
-	image(introImg,0,0,1600,700);
-	fill(20,20,20);
-	textFont(theFont,180);
-	stroke(255);
-	strokeWeight(5);
-	textSize(165);
-	text('Heart Adventure',width/2-380,height/2-20);
-	textFont('Helvetica');
-	fill(0);
-	noStroke();
-	textSize(20);
-	text('[ Press ↑ to Play ]',width/2-70,height/2+130);
-}
-
-//Game Over
-function over(){
-	background(0,0,0,90);
-	textSize(100);
-	fill(50,50,50);
-	stroke(255);
-	strokeWeight(4);
-	textFont(theFont,100);
-	text('Game Over',width/2-180,height/2);
-	noStroke();
-	textFont('Helvetica');
-	displayPoint(width/2-60,height/2+50,255);
-	BGM.pause();
-	soundgameover.play();
-}
-
-//win
-function win(){
-	background(255,185,196,99.5);
-	fill(20,20,20);
-	stroke(255);
-	strokeWeight(3);
-	textSize(100);
-	textFont(theFont,100);
-	text('You Find Love !',width/2-200,height/2);
-	noStroke();
-	textFont('Helvetica');
-	displayPoint(width/2-60,height/2+50,255);
-	BGM.pause();
-	soundwin.play();
 }
