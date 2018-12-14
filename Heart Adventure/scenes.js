@@ -12,7 +12,9 @@ function beginningScene(){
 	fill(0);
 	noStroke();
 	textSize(20);
-	text('[ Press ↑ to Play ]',width/2-70,height/2+130);
+	text('[ Click to Start ]',width/2-70,height/2+130);
+	text('Press ↑ to Play',width/2-70,height/2+70)
+	
 }
 
 //Game Over
